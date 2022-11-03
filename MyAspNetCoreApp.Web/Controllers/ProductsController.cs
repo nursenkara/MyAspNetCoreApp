@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyAspNetCoreApp.Web.Helpers;
 using MyAspNetCoreApp.Web.Models;
 
 namespace MyAspNetCoreApp.Web.Controllers
@@ -7,39 +8,18 @@ namespace MyAspNetCoreApp.Web.Controllers
     {
         private AppDbContext _context;
         private readonly ProductRepository _productRepository;
-        public ProductsController(AppDbContext context)
+        private IHelper _helper;
+        public ProductsController(AppDbContext context, IHelper helper)
         {
             _productRepository = new ProductRepository();
             _context = context;
-            //if (!_context.Products.Any())
-            //{
-            //    _context.Products.Add(new Product()
-            //    {
-            //        Name = "Kalem 1",
-            //        Price = 100,
-            //        Stock = 100,
-            //        Color = "Red"
-            //    });
-            //    _context.Products.Add(new Product()
-            //    {
-            //        Name = "Kalem 2",
-            //        Price = 100,
-            //        Stock = 200,
-            //        Color = "Red"
-            //    });
-            //    _context.Products.Add(new Product()
-            //    {
-            //        Name = "Kalem 3",
-            //        Price = 100,
-            //        Stock = 300,
-            //        Color = "Red"
-            //    });
-            //    _context.SaveChanges();
-            //}
-            
+            _helper = helper;
         }
         public IActionResult Index()
         {
+            var text = "Asp.Net";
+            var upperText = _helper.Upper(text);
+
             var products = _context.Products.ToList();
 
             return View(products);
@@ -57,29 +37,42 @@ namespace MyAspNetCoreApp.Web.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult SaveProduct()
+        public IActionResult Add(Product newProduct)
         {
             //1.yöntem
-            var name = HttpContext.Request.Form["Name"].ToString();
-            var price = decimal.Parse(HttpContext.Request.Form["Price"].ToString());
-            var stock = int.Parse(HttpContext.Request.Form["Stock"].ToString());
-            var color = HttpContext.Request.Form["Color"].ToString();
-
-            Product newProduct = new Product()
-            {
-                Name = name,
-                Price = price,
-                Stock = stock,
-                Color = color
-            };
+            //var name = HttpContext.Request.Form["Name"].ToString();
+            //var price = decimal.Parse(HttpContext.Request.Form["Price"].ToString());
+            //var stock = int.Parse(HttpContext.Request.Form["Stock"].ToString());
+            //var color = HttpContext.Request.Form["Color"].ToString();
+            //2.yöntem
+            //Product newProduct = new Product()
+            //{
+            //    Name = Name,
+            //    Price = Price,
+            //    Stock = Stock,
+            //    Color = Color
+            //};
+            TempData["status"] = "Ürün başarıyla eklendi";
             _context.Products.Add(newProduct);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
+        [HttpGet]
         public IActionResult Update(int id)
         {
-            return View();
+            var product = _context.Products.Find(id);
+            return View(product);
+        }
+        [HttpPost]
+        public IActionResult Update(Product updateProduct, int productId)
+        {
+            updateProduct.Id = productId;
+            _context.Products.Update(updateProduct);
+            _context.SaveChanges();
+
+            TempData["status"] = "Ürün başarıyla güncellendi.";
+            return RedirectToAction("Index");
         }
     }
 }
