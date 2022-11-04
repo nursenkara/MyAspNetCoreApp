@@ -1,22 +1,46 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Add";
 }
 @model Product
 <h1>Ürün ekleme</h1>
 
 <form asp-controller="Products" asp-action="Add" method="post">
-    <label>Ürün İsmi :</label>
-    <input type="text" asp-for="Name"/>
-    <br />
-    <label>Ürün Fiyat :</label>
-    <input type="text" asp-for="Price"/>
-    <br />
-    <label>Ürün Stock :</label>
-    <input type="text" asp-for="Stock"/>
-    <br />
-    <label>Ürün Renk: </label>
-    <input type="text" asp-for="Color"/>
-    <br/>
-    <button type="submit">Ürün Kaydet</button>
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Ürün ismi :</label>
+
+        <input class="form-control" asp-for="Name">
+    </div>
+    <div class="mb-3">
+        <label for="Name" class="form-label">Ürün fiyat :</label>
+        <input class="form-control" asp-for="Price">
+    </div>
+    <div class="mb-3">
+        <label for="Name" class="form-label">Ürün stok :</label>
+        <input class="form-control" asp-for="Stock">
+    </div>
+    <div class="mb-3">
+        <label for="Name" class="form-label">Ürün renk :</label>
+        <input class="form-control" asp-for="Color">
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" asp-for="IsPublish">
+        <label class="form-check-label" for="flexCheckDefault">
+            Yayınlansın mı ?
+        </label>
+    </div>
+     <div class="mb-3 mt-3">
+         <span>Ürün kaç ay satışta kalacak ?</span>
+    @foreach (var item in @ViewBag.Expire as Dictionary<string, int>)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Expire" value="@item.Value">
+            <label class="form-check-label" for="flexRadioDefault1">
+                @item.Key
+            </label>
+        </div>
+    }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ürün Kaydet</button>
 </form>
